@@ -9,6 +9,8 @@ from confluent_kafka.avro import AvroProducer
 
 logger = logging.getLogger(__name__)
 
+SCHEMA_REGISTRY_URL = 'http://localhost:8081'
+BROKER_URL = 'PLAINTEXT://localhost:9092,PLAINTEXT://localhost:9093,PLAINTEXT://localhost:9094'
 
 class Producer:
     """Defines and provides common functionality amongst Producers"""
@@ -49,8 +51,11 @@ class Producer:
             Producer.existing_topics.add(self.topic_name)
 
         # TODO: Configure the AvroProducer
-        # self.producer = AvroProducer(
-        # )
+        self.producer = AvroProducer(
+                {'bootstrap.servers': BROKER_URL},
+
+
+        )
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
@@ -60,7 +65,31 @@ class Producer:
         # the Kafka Broker.
         #
         #
-        logger.info("topic creation kafka integration incomplete - skipping")
+        client = AdminClient({'bootstrap.servers' : BROKER_URL})
+        futures = client.create_topic(
+            NewTopic(
+                        topic               = self.topic_name,
+                        num_partitions      = 1,
+                        replication_factor  = 1,
+                        config={
+                            "cleanup.policy"        : "delete",
+                            "compression.type"      : "lz4",
+                            "replication_factor.ms" : 2000,
+                            "file.delete.delay.ms"  : 2000
+                        }
+            )
+
+        )
+
+        topic, future = futures.items()
+
+        try:
+            future.result()
+            print(f'Topic: {self.topic_name} successfully created')
+        except Exception as e:
+            print(f'Failed to create topic: {self.topic_name}, {e}')
+            raise
+
 
     def time_millis(self):
         return int(round(time.time() * 1000))
