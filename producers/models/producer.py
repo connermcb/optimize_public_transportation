@@ -40,9 +40,12 @@ class Producer:
         #
         #
         self.broker_properties = {
-            # TODO
-            # TODO
-            # TODO
+            'schema.registry.url': SCHEMA_REGISTRY_URL,
+            'bootstrap.servers': BROKER_URL,
+            'client.id': "ex4",
+            'linger.ms': 1000,
+            'compression.type': 'lz4',
+            'batch.num.messages': 100,
         }
 
         # If the topic does not already exist, try to create it
@@ -52,25 +55,20 @@ class Producer:
 
         # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
-                {'bootstrap.servers': BROKER_URL},
-
-
+            self.broker_properties,
+            default_key_schema=self.key_schema,
+            default_value_schema=self.value_schema,
         )
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
-        #
-        #
-        # TODO: Write code that creates the topic for this producer if it does not already exist on
-        # the Kafka Broker.
-        #
-        #
+
         client = AdminClient({'bootstrap.servers' : BROKER_URL})
         futures = client.create_topic(
             NewTopic(
                         topic               = self.topic_name,
-                        num_partitions      = 1,
-                        replication_factor  = 1,
+                        num_partitions      = self.num_partitions,
+                        replication_factor  = self.num_replicas,
                         config={
                             "cleanup.policy"        : "delete",
                             "compression.type"      : "lz4",
