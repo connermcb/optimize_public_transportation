@@ -33,7 +33,7 @@ class Turnstile(Producer):
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=3,
-            num_replicas=2,
+            num_replicas=1,
         )
         self.station = station
         self.turnstile_hardware = TurnstileHardware(station)
@@ -50,12 +50,12 @@ class Turnstile(Producer):
         #
         self.producer.produce(
             topic=self.topic_name,
-            key={"timestamp": self.time_millis()}
+            key={"timestamp": self.time_millis()},
             key_schema = key_schema,
             value={
                 "station_id"        : self.station.station_id,
                 "station_name"      : self.station.station_name,
                 "line"              : self.station.color
-            }
+            },
             value_schema = value_schema,
         )

@@ -32,7 +32,7 @@ class Station(Producer):
             key_schema=Station.key_schema,
             value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
             num_partitions=3,
-            num_replicas=3,
+            num_replicas=1,
         )
 
         self.station_id = int(station_id)
@@ -55,7 +55,7 @@ class Station(Producer):
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": self.time_millis()},
-           key_schema = key_schema,
+           key_schema = self.producer.key_schema,
            value={
                 "station_id"        : self.station_id,
                 "train_id"          : train,
@@ -65,7 +65,7 @@ class Station(Producer):
                 "prev_station_id"   : prev_station_id,
                 "prev_direction"    : prev_direction
            },
-           value_schema = value_schema
+           value_schema = self.producer.value_schema
         )
 
     def __str__(self):
