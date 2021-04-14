@@ -51,11 +51,11 @@ class Turnstile(Producer):
         self.producer.produce(
             topic=self.topic_name,
             key={"timestamp": self.time_millis()},
-            key_schema = key_schema,
+            key_schema = self.key_schema,
             value={
                 "station_id"        : self.station.station_id,
-                "station_name"      : self.station.station_name,
+                "station_name"      : self.station.name,
                 "line"              : self.station.color
             },
-            value_schema = value_schema,
+            value_schema = self.value_schema,
         )
