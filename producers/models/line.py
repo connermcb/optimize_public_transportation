@@ -16,7 +16,7 @@ class Line:
     num_directions = 2
 
     def __init__(self, color, station_data, num_trains=10):
-        self.color = color.name
+        self.color = color.name # color as string instead of enum
         self.num_trains = num_trains
         self.stations = self._build_line_data(station_data)
         # We must always discount the terminal station at the end of each direction
@@ -53,7 +53,8 @@ class Line:
         for train_id in range(self.num_trains):
             tid = str(train_id).zfill(3)
             train = Train(
-                f"{self.color.name[0].upper()}L{tid}", Train.status.in_service
+                # updated color as string object
+                f"{self.color.upper()}L{tid}", Train.status.in_service
             )
             trains.append(train)
 
