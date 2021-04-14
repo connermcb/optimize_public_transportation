@@ -55,17 +55,17 @@ class Station(Producer):
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": self.time_millis()},
-           key_schema = self.producer.key_schema,
+           key_schema = self.key_schema,
            value={
                 "station_id"        : self.station_id,
-                "train_id"          : train,
+                "train_id"          : train.train_id,
                 "direction"         : direction,
                 "line"              : self.color,
                 "train_status"      : train.status.name,
                 "prev_station_id"   : prev_station_id,
                 "prev_direction"    : prev_direction
            },
-           value_schema = self.producer.value_schema
+           value_schema = self.value_schema
         )
 
     def __str__(self):
