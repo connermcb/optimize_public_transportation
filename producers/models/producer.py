@@ -16,7 +16,7 @@ class Producer:
     """Defines and provides common functionality amongst Producers"""
 
     # Tracks existing topics across all Producer instances
-    existing_topics = set([])
+    existing_topics = set([]) 
 
     def __init__(
         self,
@@ -48,11 +48,6 @@ class Producer:
             'batch.num.messages': 100,
         }
 
-        # If the topic does not already exist, try to create it
-        if self.topic_name not in Producer.existing_topics:
-            self.create_topic()
-            Producer.existing_topics.add(self.topic_name)
-
         # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
             self.broker_properties,
@@ -60,33 +55,37 @@ class Producer:
             default_value_schema=self.value_schema,
         )
 
+        # If the topic does not already exist, try to create it
+        if self.topic_name not in self.producer.list_topics().topics.keys():
+            self.create_topic()
+            Producer.existing_topics.add(self.topic_name)
+
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
 
         client = AdminClient({'bootstrap.servers' : BROKER_URL})
-        futures = client.create_topic(
-            NewTopic(
+        futures = client.create_topics(
+            [NewTopic(
                         topic               = self.topic_name,
                         num_partitions      = self.num_partitions,
                         replication_factor  = self.num_replicas,
                         config={
                             "cleanup.policy"        : "delete",
                             "compression.type"      : "lz4",
-                            "replication_factor.ms" : 2000,
+                            "delete.retention.ms"   : 2000,
                             "file.delete.delay.ms"  : 2000
                         }
-            )
+            )]
 
         )
 
-        topic, future = futures.items()
-
-        try:
-            future.result()
-            print(f'Topic: {self.topic_name} successfully created')
-        except Exception as e:
-            print(f'Failed to create topic: {self.topic_name}, {e}')
-            raise
+        for _, future in futures.items():
+            try:
+                future.result()
+                print(f'Topic: {self.topic_name} successfully created')
+            except Exception as e:
+                print(f'Failed to create topic: {self.topic_name}, {e}')
+                raise
 
 
     def time_millis(self):
