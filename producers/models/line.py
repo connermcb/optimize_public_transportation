@@ -16,7 +16,7 @@ class Line:
     num_directions = 2
 
     def __init__(self, color, station_data, num_trains=10):
-        self.color = color
+        self.color = color.name
         self.num_trains = num_trains
         self.stations = self._build_line_data(station_data)
         # We must always discount the terminal station at the end of each direction
