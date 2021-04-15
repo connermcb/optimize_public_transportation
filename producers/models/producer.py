@@ -16,7 +16,7 @@ class Producer:
     """Defines and provides common functionality amongst Producers"""
 
     # Tracks existing topics across all Producer instances
-    existing_topics = set([]) 
+    existing_topics = set([])
 
     def __init__(
         self,
@@ -93,12 +93,9 @@ class Producer:
 
     def close(self):
         """Prepares the producer for exit by cleaning up the producer"""
-        #
-        #
-        # TODO: Write cleanup code for the Producer here
-        #
-        #
-        logger.info("producer close incomplete - skipping")
+
+        self.producer.flush()
+        self.producer.close()
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
