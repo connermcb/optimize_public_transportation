@@ -10,7 +10,7 @@ import topic_check
 logger = logging.getLogger(__name__)
 
 
-KSQL_URL = "http://localhost:8088"
+KSQL_URL = "http://ksql:8088"
 
 #
 # TODO: Complete the following KSQL statements.
@@ -23,14 +23,23 @@ KSQL_URL = "http://localhost:8088"
 
 KSQL_STATEMENT = """
 CREATE TABLE turnstile (
-    ???
+    station_id INTEGER,
+    station_name VARCHAR,
+    line VARCHAR,
 ) WITH (
-    ???
+    KAFKA_TOPIC='turnstile.topic',
+    VALUE_FORMAT='avro',
+    KEY='station_id'
 );
 
 CREATE TABLE turnstile_summary
-WITH (???) AS
-    ???
+WITH (
+    KAFKA_TOPIC='turnstile',
+    VALUE_FORMAT='json',
+) AS
+    SELECT station_id, COUNT(*) AS count
+    FROM turnstile
+    GROUP BY station_id;
 """
 
 
@@ -43,7 +52,8 @@ def execute_statement():
 
     resp = requests.post(
         f"{KSQL_URL}/ksql",
-        headers={"Content-Type": "application/vnd.ksql.v1+json"},
+        headers={"Content-Type" : "application/vnd.ksql.v1+json; charset=utf-8",
+                 "Accept"       : "application/vnd.ksql.v1+json"},
         data=json.dumps(
             {
                 "ksql": KSQL_STATEMENT,
