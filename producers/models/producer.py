@@ -55,13 +55,13 @@ class Producer:
             default_value_schema=self.value_schema,
         )
 
-        # If the topic does not already exist, try to create it
-        if self.topic_name not in self.producer.list_topics().topics.keys():
-            self.create_topic()
-            Producer.existing_topics.add(self.topic_name)
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
+
+        # If the topic does not already exist, try to create it
+        if self.topic_name in self.producer.list_topics().topics.keys():
+            logger.info(f'Topic {self.topic_name} already exists, skipping topic creation')
 
         client = AdminClient({'bootstrap.servers' : BROKER_URL})
         futures = client.create_topics(
