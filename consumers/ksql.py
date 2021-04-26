@@ -10,7 +10,7 @@ import topic_check
 logger = logging.getLogger(__name__)
 
 
-KSQL_URL = "http://ksql:8088"
+KSQL_URL = "http://localhost:8088"
 
 #
 # TODO: Complete the following KSQL statements.
@@ -25,7 +25,7 @@ KSQL_STATEMENT = """
 CREATE TABLE turnstile (
     station_id INTEGER,
     station_name VARCHAR,
-    line VARCHAR,
+    line VARCHAR
 ) WITH (
     KAFKA_TOPIC='turnstile.topic',
     VALUE_FORMAT='avro',
@@ -33,10 +33,7 @@ CREATE TABLE turnstile (
 );
 
 CREATE TABLE turnstile_summary
-WITH (
-    KAFKA_TOPIC='turnstile',
-    VALUE_FORMAT='json',
-) AS
+WITH (VALUE_FORMAT='json') AS
     SELECT station_id, COUNT(*) AS count
     FROM turnstile
     GROUP BY station_id;
@@ -52,14 +49,15 @@ def execute_statement():
 
     resp = requests.post(
         f"{KSQL_URL}/ksql",
-        headers={"Content-Type" : "application/vnd.ksql.v1+json; charset=utf-8",
+        headers={#"Content-Type" : "application/vnd.ksql.v1+json; charset=utf-8",
+                 "Content-Type" : "application/vnd.ksql.v1+json",
                  "Accept"       : "application/vnd.ksql.v1+json"},
         data=json.dumps(
             {
                 "ksql": KSQL_STATEMENT,
-                "streamsProperties": {"ksql.streams.auto.offset.reset": "earliest"},
+                "streamsProperties": {"ksql.streams.auto.offset.reset": "earliest"}
             }
-        ),
+        )
     )
 
     # Ensure that a 2XX status code was returned
