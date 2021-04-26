@@ -11,7 +11,6 @@ from tornado import gen
 
 logger = logging.getLogger(__name__)
 
-SCHEMA_REGISTRY_URL = 'http://localhost:8081'
 BROKER_URL = 'PLAINTEXT://localhost:9092,PLAINTEXT://localhost:9093,PLAINTEXT://localhost:9094'
 
 class KafkaConsumer:
@@ -24,7 +23,7 @@ class KafkaConsumer:
         is_avro=True,
         offset_earliest=False,
         sleep_secs=1.0,
-        consume_timeout=0.1,
+        consume_timeout=1.0,
     ):
         """Creates a consumer object for asynchronous use"""
         self.topic_name_pattern = topic_name_pattern
@@ -40,11 +39,10 @@ class KafkaConsumer:
         #
         #
         self.broker_properties = {
-            'schema.registry.url': SCHEMA_REGISTRY_URL,
+            # 'schema.registry.url': SCHEMA_REGISTRY_URL,
             'bootstrap.servers': BROKER_URL,
             'group.id':'0',
-            'compression.type':'lz4',
-            'auto.offset.reset':'earliest'
+            'auto.offset.reset':'earliest' if self.offset_earliest else 'latest'
         }
 
         # TODO: Create the Consumer, using the appropriate type.
@@ -52,10 +50,10 @@ class KafkaConsumer:
             self.broker_properties["schema.registry.url"] = "http://localhost:8081"
             self.consumer = AvroConsumer(
                 self.broker_properties,
-            )
+                )
         else:
             self.consumer = Consumer(
-                self.broker_properties
+                self.broker_properties,
             )
 
         #
@@ -64,7 +62,7 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked.
         #
         #
-        self.consumer.subscribe([self.topic_name_pattern, on_assign = on_assign])
+        self.consumer.subscribe([self.topic_name_pattern], on_assign = self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
@@ -80,23 +78,28 @@ class KafkaConsumer:
         while True:
             num_results = 1
             while num_results > 0:
+                logger.info(f'Attempting to consume for {self.topic_name_pattern}')
                 num_results = self._consume()
+                logger.info(f'n results = {num_results}')
             await gen.sleep(self.sleep_secs)
 
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
-        #
-        #
-        # TODO: Poll Kafka for messages. Make sure to handle any errors or exceptions.
-        # Additionally, make sure you return 1 when a message is processed, and 0 when no message
-        # is retrieved.
-        #
-        #
+        logger.info(f'Inside _consume fn')
         try:
-            poll = asyncio.create_task(consume)
+            message = self.consumer.poll(self.consume_timeout)
         except Exception as e:
-            logging.error(f'Consume failed: {e}') 
-
+            logger.info(f'Error while polling for {self.consumer}: {e}')
+        logger.info(f'This side of try/except: {message}')
+        logger.info(f'{message is None}')
+        if True:
+            logging.info(f'No message found while polling for {self.consumer}')
+            return 0
+        elif message.error:
+            logger.info(f'Error while consuming for {self.consumer}')
+        else:
+            logger.info(f'Message consumed while polling for {self.consumer}: message.value()')
+            return 1
 
     def close(self):
         """Cleans up any open kafka consumers"""
