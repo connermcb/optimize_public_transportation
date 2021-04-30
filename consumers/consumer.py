@@ -97,7 +97,6 @@ class KafkaConsumer:
         elif message.error():
             logger.info(f'Error while consuming for {self.consumer}')
         else:
-            logger.info(f'Message ingested: {message}')
             self.message_handler(message)
             return 1
 
