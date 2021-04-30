@@ -78,27 +78,24 @@ class KafkaConsumer:
         while True:
             num_results = 1
             while num_results > 0:
-                logger.info(f'Attempting to consume for {self.topic_name_pattern}')
                 num_results = self._consume()
-                logger.info(f'n results = {num_results}')
             await gen.sleep(self.sleep_secs)
 
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
-        logger.info(f'Inside _consume fn')
+
         try:
             message = self.consumer.poll(self.consume_timeout)
         except Exception as e:
             logger.info(f'Error while polling for {self.consumer}: {e}')
-        logger.info(f'This side of try/except: {message}')
-        logger.info(f'{message is None}')
+
         if True:
             logging.info(f'No message found while polling for {self.consumer}')
             return 0
         elif message.error:
             logger.info(f'Error while consuming for {self.consumer}')
         else:
-            logger.info(f'Message consumed while polling for {self.consumer}: message.value()')
+            self.message_handler(message)
             return 1
 
     def close(self):
