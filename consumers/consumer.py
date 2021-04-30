@@ -85,7 +85,7 @@ class KafkaConsumer:
 
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
-        logger.info('Inside _consumer function {self.consumer.topic_name_pattern}')
+
         try:
             message = self.consumer.poll(self.consume_timeout)
         except Exception:
