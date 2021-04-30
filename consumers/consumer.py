@@ -62,6 +62,7 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked.
         #
         #
+        logging.info(f'Subscribing to topic pattern: {self.topic_name_pattern}')
         self.consumer.subscribe([self.topic_name_pattern], on_assign = self.on_assign)
 
     def on_assign(self, consumer, partitions):
@@ -72,6 +73,7 @@ class KafkaConsumer:
 
         logger.info("partitions assigned for %s", self.topic_name_pattern)
         consumer.assign(partitions)
+        logger.info("partitions successfully assigned")
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""
@@ -83,18 +85,19 @@ class KafkaConsumer:
 
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
-
+        logger.info('Inside _consumer function {self.consumer.topic_name_pattern}')
         try:
             message = self.consumer.poll(self.consume_timeout)
-        except Exception as e:
-            logger.info(f'Error while polling for {self.consumer}: {e}')
+        except Exception:
+            logger.info(f'Error while polling for {self.consumer}')
 
-        if True:
+        if message is None:
             logging.info(f'No message found while polling for {self.consumer}')
             return 0
-        elif message.error:
+        elif message.error():
             logger.info(f'Error while consuming for {self.consumer}')
         else:
+            logger.info(f'Message ingested: {message}')
             self.message_handler(message)
             return 1
 
