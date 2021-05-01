@@ -63,7 +63,7 @@ def run_server():
     # Build kafka consumers
     consumers = [
         KafkaConsumer(
-            "org.chicago.cta.weather.v1",
+            "weather.status",
             weather_model.process_message,
             offset_earliest=True,
         ),
@@ -74,7 +74,7 @@ def run_server():
             is_avro=False,
         ),
         KafkaConsumer(
-            "^org.chicago.cta.station.arrivals.",
+            "^org.chicago.cta.station.*",
             lines.process_message,
             offset_earliest=True,
         ),
