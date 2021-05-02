@@ -43,9 +43,10 @@ WITH (VALUE_FORMAT='json') AS
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
     if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
+        logging.info('The topic TURNSTILE_SUMMARY already created')
         return
 
-    logging.debug("executing ksql statement...")
+    logging.info("executing ksql statement...")
 
     resp = requests.post(
         f"{KSQL_URL}/ksql",
@@ -63,6 +64,6 @@ def execute_statement():
     # Ensure that a 2XX status code was returned
     resp.raise_for_status()
 
-
+logging.info('Here')
 if __name__ == "__main__":
     execute_statement()

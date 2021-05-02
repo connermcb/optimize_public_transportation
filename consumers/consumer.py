@@ -89,13 +89,13 @@ class KafkaConsumer:
         try:
             message = self.consumer.poll(self.consume_timeout)
         except Exception:
-            logger.info(f'Error while polling for {self.consumer}')
+            logger.info(f'Error while polling')
 
         if message is None:
-            logging.info(f'No message found while polling for {self.consumer}')
+            logging.info(f'No message found')
             return 0
         elif message.error():
-            logger.info(f'Error while consuming for {self.consumer}')
+            logger.info(f'Error while consuming message')
         else:
             self.message_handler(message)
             return 1
