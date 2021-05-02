@@ -48,7 +48,7 @@ def configure_connector():
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "cta.connector",
+               "topic.prefix": "cta.connect.",
                "poll.interval.ms": 3600000,
            }
        }),
