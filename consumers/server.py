@@ -74,7 +74,7 @@ def run_server():
             is_avro=False,
         ),
         KafkaConsumer(
-            "^org.chicago.cta.station.*",
+            "^org.chicago.cta.arrivals.*",
             lines.process_message,
             offset_earliest=True,
         ),
