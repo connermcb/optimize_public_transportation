@@ -61,7 +61,6 @@ async def stationevent(stationevents):
                 order = se.order,
                 line = 'red' if se.red else 'blue' if se.blue else 'green'
                 )
-            logging.info(table[se.station_name].get(line))
 
 
 if __name__ == "__main__":
