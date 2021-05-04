@@ -32,12 +32,6 @@ class KafkaConsumer:
         self.consume_timeout = consume_timeout
         self.offset_earliest = offset_earliest
 
-        #
-        #
-        # TODO: Configure the broker properties below. Make sure to reference the project README
-        # and use the Host URL for Kafka and Schema Registry!
-        #
-        #
         self.broker_properties = {
             # 'schema.registry.url': SCHEMA_REGISTRY_URL,
             'bootstrap.servers': BROKER_URL,
@@ -45,7 +39,6 @@ class KafkaConsumer:
             'auto.offset.reset':'earliest' if self.offset_earliest else 'latest'
         }
 
-        # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
             self.broker_properties["schema.registry.url"] = "http://localhost:8081"
             self.consumer = AvroConsumer(
@@ -56,12 +49,6 @@ class KafkaConsumer:
                 self.broker_properties,
             )
 
-        #
-        #
-        # TODO: Configure the AvroConsumer and subscribe to the topics. Make sure to think about
-        # how the `on_assign` callback should be invoked.
-        #
-        #
         logging.info(f'Subscribing to topic pattern: {self.topic_name_pattern}')
         self.consumer.subscribe([self.topic_name_pattern], on_assign = self.on_assign)
 
