@@ -26,11 +26,11 @@ class Station(Producer):
             .replace("-", "_")
             .replace("'", "")
         )
-        topic_name = f"org.chicago.cta.arrivals.{station_name}" # TODO: Come up with a better topic name
+        topic_name = f"org.chicago.cta.arrivals.{station_name}"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
-            value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
+            value_schema=Station.value_schema,
             num_partitions=3,
             num_replicas=1,
         )
@@ -46,12 +46,7 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        #
-        #
-        # TODO: Complete this function by producing an arrival message to Kafka
-        #
-        #
-        # logger.info("arrival kafka integration incomplete - skipping")
+
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": self.time_millis()},

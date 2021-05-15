@@ -12,15 +12,6 @@ logger = logging.getLogger(__name__)
 
 KSQL_URL = "http://localhost:8088"
 
-#
-# TODO: Complete the following KSQL statements.
-# TODO: For the first statement, create a `turnstile` table from your turnstile topic.
-#       Make sure to use 'avro' datatype!
-# TODO: For the second statment, create a `turnstile_summary` table by selecting from the
-#       `turnstile` table and grouping on station_id.
-#       Make sure to cast the COUNT of station id to `count`
-#       Make sure to set the value format to JSON
-
 KSQL_STATEMENT = """
 CREATE TABLE turnstile (
     station_id INTEGER,
@@ -50,7 +41,7 @@ def execute_statement():
 
     resp = requests.post(
         f"{KSQL_URL}/ksql",
-        headers={#"Content-Type" : "application/vnd.ksql.v1+json; charset=utf-8",
+        headers={
                  "Content-Type" : "application/vnd.ksql.v1+json",
                  "Accept"       : "application/vnd.ksql.v1+json"},
         data=json.dumps(

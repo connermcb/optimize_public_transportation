@@ -25,8 +25,8 @@ class Weather(Producer):
 
     rest_proxy_url = "http://localhost:8082"
 
-    key_schema = None#avro.load(f"{Path(__file__).parents[0]}/schemas/weather_key.json")
-    value_schema = None#avro.load(f"{Path(__file__).parents[0]}/schemas/weather_value.json")
+    key_schema = None
+    value_schema = None
 
     winter_months = set((0, 1, 2, 3, 10, 11))
     summer_months = set((6, 7, 8))
@@ -71,25 +71,8 @@ class Weather(Producer):
     def run(self, month):
         self._set_weather(month)
 
-        #
-        #
-        # TODO: Complete the function by posting a weather event to REST Proxy. Make sure to
-        # specify the Avro schemas and verify that you are using the correct Content-Type header.
-        #
-        #
-        # logger.info("weather kafka proxy integration incomplete - skipping")
         resp = requests.post(
-           #
-           #
-           # TODO: What URL should be POSTed to?
-           #
-
            f"{Weather.rest_proxy_url}/topics/weather.status",
-           #
-           #
-           # TODO: What Headers need to bet set?
-           #
-           #
            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
            data=json.dumps(
                {

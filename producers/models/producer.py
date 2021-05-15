@@ -33,12 +33,6 @@ class Producer:
         self.num_partitions = num_partitions
         self.num_replicas = num_replicas
 
-        #
-        #
-        # TODO: Configure the broker properties below. Make sure to reference the project README
-        # and use the Host URL for Kafka and Schema Registry!
-        #
-        #
         self.broker_properties = {
             'schema.registry.url': SCHEMA_REGISTRY_URL,
             'bootstrap.servers': BROKER_URL,
@@ -48,7 +42,6 @@ class Producer:
             'batch.num.messages': 100,
         }
 
-        # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
             self.broker_properties,
             default_key_schema=self.key_schema,
